@@ -1,5 +1,12 @@
-import { EllipseMiniSolid } from "@medusajs/icons"
-import { Label, RadioGroup, Text, clx } from "@medusajs/ui"
+import { Label } from "components/ui/label"
+import { RadioGroup, RadioGroupItem } from "components/ui/radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "components/ui/select"
 
 type FilterRadioGroupProps = {
   title: string
@@ -20,39 +27,23 @@ const FilterRadioGroup = ({
   "data-testid": dataTestId,
 }: FilterRadioGroupProps) => {
   return (
-    <div className="flex gap-x-3 flex-col gap-y-3">
-      <Text className="txt-compact-small-plus text-ui-fg-muted">{title}</Text>
-      <RadioGroup data-testid={dataTestId} onValueChange={handleChange}>
-        {items?.map((i) => (
-          <div
-            key={i.value}
-            className={clx("flex gap-x-2 items-center", {
-              "ml-[-23px]": i.value === value,
-            })}
-          >
-            {i.value === value && <EllipseMiniSolid />}
-            <RadioGroup.Item
-              checked={i.value === value}
-              className="hidden peer"
-              id={i.value}
-              value={i.value}
-            />
-            <Label
-              htmlFor={i.value}
-              className={clx(
-                "!txt-compact-small !transform-none text-ui-fg-subtle hover:cursor-pointer",
-                {
-                  "text-ui-fg-base": i.value === value,
-                }
-              )}
-              data-testid="radio-label"
-              data-active={i.value === value}
-            >
+    <div className="flex items-center gap-3">
+      <Select
+        value={value}
+        onValueChange={handleChange}
+        data-testid={dataTestId}
+      >
+        <SelectTrigger className="w-[180px] border-x-0 border-t-0 border-foreground/80 shadow-none rounded-none">
+          <SelectValue placeholder={title} />
+        </SelectTrigger>
+        <SelectContent>
+          {items?.map((i) => (
+            <SelectItem key={i.value} value={i.value}>
               {i.label}
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }

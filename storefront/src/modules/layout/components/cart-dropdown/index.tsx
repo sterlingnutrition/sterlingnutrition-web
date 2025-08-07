@@ -1,109 +1,87 @@
 "use client"
 
-import { Popover, Transition } from "@headlessui/react"
-import { Button } from "@medusajs/ui"
-import { usePathname } from "next/navigation"
-import { Fragment, useEffect, useRef, useState } from "react"
-
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import DeleteButton from "@modules/common/components/delete-button"
-import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import LocalizedClientLink, {
+  LocalizedClientLinkButton,
+} from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { ShoppingBag, ShoppingCart, X } from "lucide-react"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "components/ui/sheet"
+import { Button } from "components/ui/button"
+import { ScrollArea } from "components/ui/scroll-area"
+import { useState } from "react"
+import LineItemOptions from "@modules/common/components/line-item-options"
+import CartItemSelect from "@modules/cart/components/cart-item-select"
+import { updateLineItem } from "@lib/data/cart"
+import Spinner from "@modules/common/icons/spinner"
 
 const CartDropdown = ({
   cart: cartState,
 }: {
   cart?: HttpTypes.StoreCart | null
 }) => {
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
-  )
-  const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
-  const open = () => setCartDropdownOpen(true)
-  const close = () => setCartDropdownOpen(false)
-
+  const [open, setOpen] = useState(false)
   const totalItems =
     cartState?.items?.reduce((acc, item) => {
       return acc + item.quantity
     }, 0) || 0
 
   const subtotal = cartState?.subtotal ?? 0
-  const itemRef = useRef<number>(totalItems || 0)
-
-  const timedOpen = () => {
-    open()
-
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
-  const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
-    open()
-  }
-
-  // Clean up the timer when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
-    }
-  }, [activeTimer])
-
-  const pathname = usePathname()
-
-  // open cart dropdown when modifying the cart items, but only if we're not on the cart page
-  useEffect(() => {
-    if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
-      timedOpen()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalItems, itemRef.current])
 
   return (
-    <div
-      className="h-full z-50"
-      onMouseEnter={openAndCancel}
-      onMouseLeave={close}
-    >
-      <Popover className="relative h-full">
-        <Popover.Button className="h-full">
-          <LocalizedClientLink
-            className="hover:text-ui-fg-base"
-            href="/cart"
-            data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
-        </Popover.Button>
-        <Transition
-          show={cartDropdownOpen}
-          as={Fragment}
-          enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button
+          className="flex gap-1 relative cursor-pointer bg-cm-primary size-10 rounded-full justify-center items-center"
+          data-testid="nav-cart-link"
         >
-          <Popover.Panel
-            static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
-            data-testid="nav-cart-dropdown"
-          >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
-            </div>
-            {cartState && cartState.items?.length ? (
-              <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
+          <ShoppingBag className="stroke-[1.5] size-5" />
+          {totalItems > 0 && (
+            <span className="font-medium text-[10px] bg-red-500 text-white size-4 rounded-full p-1 absolute top-0.5 right-0.5  inline-flex justify-center items-center">
+              {totalItems}
+            </span>
+          )}
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        data-testid="nav-cart-dropdown"
+        showCloseButton={false}
+        className="sm:rounded-l-3xl flex flex-col"
+      >
+        <SheetHeader>
+          <SheetTitle className="flex items-center justify-between">
+            <h3 className="text-subtitle-sm font-normal inline-flex gap-2">
+              Cart <span className="text-body-sm">({totalItems})</span>
+            </h3>
+
+            <SheetClose>
+              <button
+                data-testid="close-menu-button"
+                onClick={() => setOpen(false)}
+                className="cursor-pointer"
+              >
+                <X className="size-10 stroke-1" />
+              </button>
+            </SheetClose>
+          </SheetTitle>
+        </SheetHeader>
+
+        {cartState && cartState.items?.length ? (
+          <>
+            <div className="flex flex-col h-[calc(100vh-3.8rem)] gap-4">
+              <ScrollArea className="flex-1 overflow-y-auto px-4 lg:px-6">
+                <div className="space-y-4 ">
                   {cartState.items
                     .sort((a, b) => {
                       return (a.created_at ?? "") > (b.created_at ?? "")
@@ -111,69 +89,17 @@ const CartDropdown = ({
                         : 1
                     })
                     .map((item) => (
-                      <div
-                        className="grid grid-cols-[122px_1fr] gap-x-4"
-                        key={item.id}
-                        data-testid="cart-item"
-                      >
-                        <LocalizedClientLink
-                          href={`/products/${item.variant?.product?.handle}`}
-                          className="w-24"
-                        >
-                          <Thumbnail
-                            thumbnail={item.variant?.product?.thumbnail}
-                            images={item.variant?.product?.images}
-                            size="square"
-                          />
-                        </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
-                          <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
-                                <h3 className="text-base-regular overflow-hidden text-ellipsis">
-                                  <LocalizedClientLink
-                                    href={`/products/${item.variant?.product?.handle}`}
-                                    data-testid="product-link"
-                                  >
-                                    {item.title}
-                                  </LocalizedClientLink>
-                                </h3>
-                                <LineItemOptions
-                                  variant={item.variant}
-                                  data-testid="cart-item-variant"
-                                  data-value={item.variant}
-                                />
-                                <span
-                                  data-testid="cart-item-quantity"
-                                  data-value={item.quantity}
-                                >
-                                  Quantity: {item.quantity}
-                                </span>
-                              </div>
-                              <div className="flex justify-end">
-                                <LineItemPrice item={item} style="tight" />
-                              </div>
-                            </div>
-                          </div>
-                          <DeleteButton
-                            id={item.id}
-                            className="mt-1"
-                            data-testid="cart-item-remove-button"
-                          >
-                            Remove
-                          </DeleteButton>
-                        </div>
-                      </div>
+                      <CartItem key={item.id} item={item} />
                     ))}
                 </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular">
+              </ScrollArea>
+
+              <SheetFooter className="flex flex-col border-t gap-y-1 mt-auto lg:p-6">
+                <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
-                      Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
-                    </span>
+                    <span className="font-medium text-body-sm">Total</span>
                     <span
-                      className="text-large-semi"
+                      className="font-medium text-body-sm"
                       data-testid="cart-subtotal"
                       data-value={subtotal}
                     >
@@ -183,40 +109,154 @@ const CartDropdown = ({
                       })}
                     </span>
                   </div>
-                  <LocalizedClientLink href="/cart" passHref>
+                  <span className="text-sm text-muted-foreground">
+                    Shipping, taxes, and discount codes are calculated at
+                    checkout
+                  </span>
+                </div>
+                <div className="flex gap-2 mt-3 w-full">
+                  <LocalizedClientLink href="/cart" className="w-full">
                     <Button
-                      className="w-full"
-                      size="large"
+                      className="w-full flex-1 rounded-full"
+                      size="expanded"
                       data-testid="go-to-cart-button"
+                      onClick={() => setOpen(false)}
                     >
-                      Go to cart
+                      View Cart
+                    </Button>
+                  </LocalizedClientLink>
+                  <LocalizedClientLink
+                    href="/checkout?step=address"
+                    className="w-full "
+                  >
+                    <Button
+                      className="w-full flex-1 rounded-full"
+                      size="expanded"
+                      data-testid="go-to-cart-button"
+                      onClick={() => setOpen(false)}
+                    >
+                      Checkout
                     </Button>
                   </LocalizedClientLink>
                 </div>
-              </>
-            ) : (
-              <div>
-                <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                  <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                    <span>0</span>
-                  </div>
-                  <span>Your shopping bag is empty.</span>
-                  <div>
-                    <LocalizedClientLink href="/store">
-                      <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
-                      </>
-                    </LocalizedClientLink>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Popover.Panel>
-        </Transition>
-      </Popover>
-    </div>
+              </SheetFooter>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full text-subtitle-sm h-full">
+            <span className="">Your cart is</span>
+            <span className="font-elegant italic text-subtitle !font-semibold mb-6">
+              empty
+            </span>
+            <div>
+              <LocalizedClientLink href="/store">
+                <>
+                  <span className="sr-only">Go to all products page</span>
+                  <Button
+                    onClick={() => setOpen(false)}
+                    className="uppercase"
+                    variant="stack"
+                  >
+                    Continue Shopping
+                  </Button>
+                </>
+              </LocalizedClientLink>
+            </div>
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
   )
 }
 
 export default CartDropdown
+
+interface CartItemProps {
+  item: HttpTypes.StoreCartLineItem
+}
+
+const CartItem = ({ item }: CartItemProps) => {
+  const [updating, setUpdating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const changeQuantity = async (quantity: number) => {
+    setError(null)
+    setUpdating(true)
+
+    const message = await updateLineItem({
+      lineId: item.id,
+      quantity,
+    })
+      .catch((err) => {
+        setError(err.message)
+      })
+      .finally(() => {
+        setUpdating(false)
+      })
+  }
+  const maxQtyFromInventory = 10
+  const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
+
+  return (
+    <div className="grid grid-cols-5 gap-6 transition-colors">
+      <div>
+        <Thumbnail
+          thumbnail={item.variant?.product?.thumbnail}
+          images={item.variant?.product?.images}
+          size="square"
+          className="size-16 lg:size-20 rounded-sm"
+        />
+      </div>
+
+      <div className="col-span-3 ml-6 flex flex-col py-0.5">
+        <h3 className="font-medium flex-wrap">
+          <LocalizedClientLinkButton
+            href={`/products/${item.variant?.product?.handle}`}
+            className="!text-sm"
+          >
+            {item.title}
+          </LocalizedClientLinkButton>
+        </h3>
+        <LineItemOptions
+          variant={item.variant}
+          data-testid="product-variant"
+          className="text-sm text-muted-foreground"
+        />
+        <div className="text-sm mt-auto">
+          <LineItemPrice item={item} />
+        </div>
+      </div>
+      <div className="flex items-end flex-col justify-between">
+        <DeleteButton
+          id={item.id}
+          className="text-muted-foreground text-sm hover:text-destructive transition-colors"
+        />
+        <div className="flex items-center gap-2">
+          {updating && <Spinner />}
+          <CartItemSelect
+            value={item.quantity}
+            onChange={(value) => changeQuantity(parseInt(value.target.value))}
+            className="w-14 h-6 p-4 text-xs"
+            data-testid="product-select-button"
+          >
+            {/* TODO: Update this with the v2 way of managing inventory */}
+            {Array.from(
+              {
+                length: Math.min(maxQuantity, 10),
+              },
+              (_, i) => (
+                <option value={i + 1} key={i}>
+                  {i + 1}
+                </option>
+              )
+            )}
+
+            <option value={1} key={1}>
+              1
+            </option>
+          </CartItemSelect>
+        </div>
+      </div>
+    </div>
+  )
+}

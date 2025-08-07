@@ -1,5 +1,4 @@
 import { Dialog, Transition } from "@headlessui/react"
-import { Button, clx } from "@medusajs/ui"
 import React, { Fragment, useMemo } from "react"
 
 import useToggleState from "@lib/hooks/use-toggle-state"
@@ -9,6 +8,8 @@ import X from "@modules/common/icons/x"
 import { getProductPrice } from "@lib/util/get-product-price"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
+import { cn } from "@lib/utils"
+import { Button } from "components/ui/button"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
@@ -52,7 +53,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed", {
+        className={cn("lg:hidden inset-x-0 bottom-0 z-10 fixed", {
           "pointer-events-none": !show,
         })}
       >
@@ -83,7 +84,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                     </p>
                   )}
                   <span
-                    className={clx({
+                    className={cn({
                       "text-ui-fg-interactive":
                         selectedPrice.price_type === "sale",
                     })}
@@ -99,7 +100,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               <Button
                 onClick={open}
                 variant="secondary"
-                className="w-full"
+                className="w-full border-b rounded-none border-foreground/90"
                 data-testid="mobile-actions-button"
               >
                 <div className="flex items-center justify-between w-full">
@@ -114,9 +115,11 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
+                loading={isAdding}
+                loadingText="Adding..."
                 data-testid="mobile-cart-button"
+                variant="stack"
+                className="w-full uppercase font-base"
               >
                 {!variant
                   ? "Select variant"
@@ -129,7 +132,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
         </Transition>
       </div>
       <Transition appear show={state} as={Fragment}>
-        <Dialog as="div" className="relative z-[75]" onClose={close}>
+        <Dialog as="div" className="relative z-75" onClose={close}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -139,7 +142,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-700 bg-opacity-75 backdrop-blur-sm" />
+            <div className="fixed inset-0 bg-gray-700 bg-opacity-75 backdrop-blur-xs" />
           </Transition.Child>
 
           <div className="fixed bottom-0 inset-x-0">

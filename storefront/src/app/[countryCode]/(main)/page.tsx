@@ -1,14 +1,20 @@
 import { Metadata } from "next"
-
-import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
 import { getCollectionsWithProducts } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import About from "@modules/home/components/about"
+import ShowcaseProducts from "@modules/home/components/showcase-products"
+import Categories from "@modules/home/components/categories"
+import Testimonials from "@modules/home/components/testimonials"
+import CTA from "@modules/home/components/cta"
+import TrustSection from "@modules/home/components/trust-section/page"
+import ProductRail from "@modules/home/components/featured-products/product-rail"
+import { getCategoryByHandle } from "@lib/data/categories"
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
+  title: "Home - Sterling Nutrition",
   description:
-    "A performant frontend ecommerce starter template with Next.js 14 and Medusa.",
+    "The one stop online shop for the best health supplements in Singapore! The official distributor of Goli, Immuneti, and Hab Shifa in Singapore. Shop Now!",
 }
 
 export default async function Home({
@@ -26,11 +32,18 @@ export default async function Home({
   return (
     <>
       <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
+      {collections[1] && (
+        <ProductRail collection={collections[1]} region={region} />
+      )}
+      <Categories />
+      {collections[0] && (
+        <ProductRail collection={collections[0]} region={region} />
+      )}
+      <About />
+      <ShowcaseProducts />
+      <Testimonials />
+      <CTA />
+      <TrustSection />
     </>
   )
 }
