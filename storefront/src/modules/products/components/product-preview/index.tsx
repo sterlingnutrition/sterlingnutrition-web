@@ -29,7 +29,7 @@ export default async function ProductPreview({
   return (
     <div
       data-testid="group"
-      className="group relative border-2 rounded-3xl h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg"
+      className="group relative border rounded-3xl h-full overflow-hidden transition-all duration-300 group-hover:shadow-lg"
     >
       <LocalizedClientLink
         href={`/products/${product.handle}`}

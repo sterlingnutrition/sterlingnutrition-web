@@ -18,7 +18,7 @@ const CategoryItem = ({
   return (
     <div
       className={cn(
-        "w-full h-full p-4 group flex items-center aspect-video rounded-[50px] text-background relative",
+        "w-full h-full p-4 group flex flex-col-reverse lg:flex-row items-center lg:aspect-video rounded-3xl lg:rounded-[50px] text-background relative",
         bgColor
       )}
     >
@@ -38,7 +38,7 @@ const CategoryItem = ({
           </Button>
         </LocalizedClientLink>
       </div>
-      <div className="relative w-full h-full">
+      <div className="relative w-full aspect-square h-full">
         <Image
           src={image}
           alt={name}

@@ -20,11 +20,11 @@ const FeatureCard = ({
   disableParallax?: boolean
 }) => (
   <motion.div
-    className="w-full aspect-[12/16] h-full max-w-xs bg-gradient-to-tr  from-green-300 to-green-100 p-6 flex justify-center items-center flex-col bg-muted lg:rounded-lg gap-4 lg:gap-10 lg:shadow-xl"
+    className="w-full aspect-[12/16] h-full max-w-xs bg-cm-primary p-6 flex justify-center items-center flex-col lg:rounded-lg gap-4 lg:gap-10 lg:shadow-xl"
     style={disableParallax ? {} : { y }}
   >
     <div className="aspect-square w-full max-w-[7rem]  mx-auto rounded-full flex justify-center items-center bg-white">
-      <Icon className="size-8 text-foreground stroke-1" />
+      <Icon className="size-8 text-green-800 stroke-1" />
     </div>
 
     <h3 className=" text-center text-base sm:text-lg md:text-xl font-medium">

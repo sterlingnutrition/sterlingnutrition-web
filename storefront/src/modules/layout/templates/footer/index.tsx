@@ -47,7 +47,7 @@ export default async function Footer({
   const { product_categories } = await getCategoriesList(0, 6)
 
   return (
-    <footer className="relative pt-16 lg:pt-32">
+    <footer className="relative pt-16 lg:pt-32 bg-lime-950 rounded-t-[4rem] !text-background">
       <div className="absolute bottom-0 -z-10">
         <Image
           src="/footer-bg.webp"
@@ -63,7 +63,7 @@ export default async function Footer({
             <div className="flex items-center gap-2 lg:justify-start">
               <LocalizedClientLink
                 href="/"
-                className="relative uppercase h-14 sm:h-18 aspect-video txt-compact-xlarge-plus hover:text-ui-fg-base"
+                className="relative uppercase h-14 sm:h-18 aspect-video txt-compact-xlarge-plus hover:text-cm-primary"
               >
                 <Image
                   src={"/sterling-logo.png"}
@@ -73,12 +73,12 @@ export default async function Footer({
                 />
               </LocalizedClientLink>
             </div>
-            <p className="max-w-[70%] text-body-sm text-foreground">
+            <p className="max-w-[70%] text-body-sm text-background">
               {description}
             </p>
-            <ul className="flex items-center space-x-6 text-foreground">
+            <ul className="flex items-center space-x-6 text-background">
               {socialLinks.map((social, idx) => (
-                <li key={idx} className="font-medium hover:text-primary">
+                <li key={idx} className="font-medium hover:text-cm-primary ">
                   <a href={social.href} aria-label={social.label}>
                     {social.icon}
                   </a>
@@ -90,7 +90,7 @@ export default async function Footer({
             {product_categories && product_categories?.length > 0 && (
               <div>
                 <h3 className="mb-4 font-semibold text-body-sm">Categories</h3>
-                <ul className="space-y-3 text-body-sm font-normal text-foreground">
+                <ul className="space-y-3 text-body-sm font-normal text-background">
                   {product_categories?.slice(0, 6).map((c) => {
                     if (c.parent_category) {
                       return null
@@ -106,11 +106,11 @@ export default async function Footer({
                     return (
                       <li
                         key={c.id}
-                        className=" text-body-sm hover:text-primary"
+                        className=" text-body-sm hover:text-cm-primary"
                       >
                         <LocalizedClientLinkButton
                           href={`/store/categories/${c.handle}`}
-                          className={clx("hover:text-ui-fg-base font-normal")}
+                          className={clx("hover:text-cm-primary font-normal")}
                         >
                           {c.name}
                         </LocalizedClientLinkButton>
@@ -119,7 +119,7 @@ export default async function Footer({
                             {children.map((child) => (
                               <li key={child.id}>
                                 <LocalizedClientLinkButton
-                                  className="hover:text-ui-fg-base"
+                                  className="hover:text-cm-primary"
                                   href={`/store/categories/${child.handle}`}
                                 >
                                   {child.name}
@@ -138,9 +138,12 @@ export default async function Footer({
             {collections && collections.length > 0 && (
               <div>
                 <h3 className="mb-4 font-semibold text-body-sm">Collections</h3>
-                <ul className="space-y-3 text-body-sm text-foreground">
+                <ul className="space-y-3 text-body-sm text-background">
                   {collections?.slice(0, 6).map((c) => (
-                    <li key={c.id} className="font-normal hover:text-primary">
+                    <li
+                      key={c.id}
+                      className="font-normal hover:text-cm-primary"
+                    >
                       <LocalizedClientLinkButton
                         href={`/store/collections/${c.handle}`}
                       >
@@ -154,18 +157,18 @@ export default async function Footer({
 
             <div>
               <h3 className="mb-4 font-semibold text-body-sm">Company</h3>
-              <ul className="space-y-3 text-body-sm text-foreground">
-                <li className="font-normal hover:text-primary">
+              <ul className="space-y-3 text-body-sm text-background">
+                <li className="font-normal hover:text-cm-primary">
                   <LocalizedClientLinkButton href="/about">
                     Our Story
                   </LocalizedClientLinkButton>
                 </li>
-                <li className="font-normal hover:text-primary">
+                <li className="font-normal hover:text-cm-primary">
                   <LocalizedClientLinkButton href="/about">
                     Why Sterling
                   </LocalizedClientLinkButton>
                 </li>
-                <li className="font-normal hover:text-primary">
+                <li className="font-normal hover:text-cm-primary">
                   <LocalizedClientLinkButton href="/contact">
                     Contact Us
                   </LocalizedClientLinkButton>
@@ -174,7 +177,7 @@ export default async function Footer({
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-between gap-2 py-8 mt-8 border-t md:gap-4 text-body-sm text-foreground md:flex-row md:items-center md:text-left">
+        <div className="flex flex-col justify-between gap-2 py-8 mt-8 border-t md:gap-4 text-body-sm text-background md:flex-row md:items-center md:text-left">
           <p className="order-2 lg:order-1">
             © {new Date().getFullYear()} Sterling Nutrition. All rights
             reserved.

@@ -25,22 +25,23 @@ export default async function Home({
   const collections = await getCollectionsWithProducts(countryCode)
   const region = await getRegion(countryCode)
 
-  if (!collections || !region) {
+  if (!region) {
     return null
   }
 
   return (
     <>
       <Hero />
-      {collections[1] && (
+      {collections?.[1] && (
         <ProductRail collection={collections[1]} region={region} />
       )}
       <Categories />
-      {collections[0] && (
+      {collections?.[0] && (
         <ProductRail collection={collections[0]} region={region} />
       )}
-      <About />
+
       <ShowcaseProducts />
+      <About />
       <Testimonials />
       <CTA />
       <TrustSection />
