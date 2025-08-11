@@ -7,7 +7,13 @@ import LocalizedClientLink, {
 } from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
-import { Search, ShoppingCart, UserRound } from "lucide-react"
+import {
+  Search,
+  ShoppingBag,
+  ShoppingCart,
+  TruckElectric,
+  UserRound,
+} from "lucide-react"
 import Image from "next/image"
 import CountrySelect from "@modules/layout/components/country-select"
 import Marquee from "components/ui/marquee"
@@ -20,12 +26,15 @@ export const SideMenuItems = {
 }
 
 const marqueeItems = [
-  "Great products",
-  "-",
-  "Fast shipping",
-  "-",
-  "Excellent customer service",
-  "-",
+  <span className="w-[300px] flex items-center gap-4">
+    <ShoppingBag className="size-4" /> Great products
+  </span>,
+  <span className="w-[300px] flex items-center gap-4">
+    <TruckElectric className="size-4" /> Fast shipping
+  </span>,
+  <span className="w-[300px] flex items-center gap-4">
+    <UserRound className="size-4" /> Excellent customer service
+  </span>,
 ]
 
 export default async function Nav() {
@@ -39,11 +48,11 @@ export default async function Nav() {
             Contact <span className="font-semibold">+94 77 123 4567</span>
           </LocalizedClientLinkButton>
           <div className="hidden md:block md:col-span-2">
-            <Marquee pauseOnHover className="[--duration:20s]">
+            <Marquee className="[--duration:20s]">
               {marqueeItems.map((item, index) => (
-                <span key={index} className="text-body-sm font-medium">
+                <div key={index} className="text-body-sm font-normal">
                   {item}
-                </span>
+                </div>
               ))}
             </Marquee>
           </div>

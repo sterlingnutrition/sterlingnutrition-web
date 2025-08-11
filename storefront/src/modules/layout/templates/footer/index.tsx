@@ -34,8 +34,9 @@ const defaultSocialLinks = [
 ]
 
 const defaultLegalLinks = [
-  { name: "Terms and Conditions", href: "#" },
-  { name: "Privacy Policy", href: "#" },
+  { name: "Terms and Legal", href: "/terms-and-legal" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Return Policy", href: "/return-policy" },
 ]
 
 export default async function Footer({
@@ -60,10 +61,10 @@ export default async function Footer({
       <div className="content-container">
         <div className="flex flex-col justify-between w-full gap-10 pb-6 lg:pb-16 lg:flex-row lg:items-start lg:text-left">
           <div className="flex flex-col justify-between w-full gap-6 lg:items-start">
-            <div className="flex items-center gap-2 lg:justify-start">
+            <div className="flex lg:flex-row flex-col w-max items-center gap-2 lg:justify-start bg-white px-4">
               <LocalizedClientLink
                 href="/"
-                className="relative uppercase h-14 sm:h-18 aspect-video txt-compact-xlarge-plus hover:text-cm-primary"
+                className="relative uppercase h-14 sm:h-18 aspect-video  txt-compact-xlarge-plus hover:text-cm-primary"
               >
                 <Image
                   src={"/sterling-logo.png"}
